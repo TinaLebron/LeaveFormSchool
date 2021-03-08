@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/Scripts/vue.min.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/LeaveForm/Index" style="width: 100%;text-align:right;"><img src="~/Images/school1.png" /></a>
+            </div>
+            <div class="navbar-collapse collapse" id="body">
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:void(0);" style="width: 100%;text-align:right;" v-on:click="logout">@Session["sIDNo"] 登出</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+
+
+</body>
+</html>
+
+
+
+
+<script type="text/javascript">
+
+    var vm1 = new Vue({
+        el: "#body",
+        data: {
+
+        },
+        methods: {
+            logout: function () {
+                var getUrl = '/LeaveForm/Logout'
+                window.location = getUrl;
+            }
+        }
+    });
+
+
+
+</script>
+

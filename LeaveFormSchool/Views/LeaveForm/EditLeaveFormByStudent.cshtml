@@ -1,0 +1,733 @@
+﻿@{
+    ViewBag.Title = "EditLeaveFormByStudent";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+}
+
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/vue.min.js"></script>
+<link href="~/Content/Table/sb-admin-2.min.css">
+<link href="~/Content/Table/dataTables.bootstrap4.min.css">
+<script src="~/Scripts/Table/jquery.min.js"></script>
+<script src="~/Scripts/Table/bootstrap.bundle.min.js"></script>
+<script src="~/Scripts/Table/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/Table/dataTables.bootstrap4.min.js"></script>
+<script src="~/Scripts/Table/datatables-demo.js"></script>
+<script src="~/Scripts/MultiFile/jquery.MultiFile.js"></script>
+<script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+<link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+<script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+<link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+<script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+
+<style>
+    .alph-list__title {
+        font-size: 2.375em;
+        font-weight: 300;
+        position: relative;
+        color: #333;
+        padding: 0 0 0.15789474em;
+    }
+
+        .alph-list__title::before {
+            position: absolute;
+            z-index: 3;
+            bottom: 0;
+            left: 0;
+            width: 1.875rem;
+            height: 3px;
+            content: "";
+            background: #A02337;
+        }
+
+    .alph-list__alph {
+        font-size: 2.63157895em;
+        font-weight: 400;
+        line-height: 1;
+        text-indent: -0.05263158em;
+    }
+
+    .alph-list__title::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        content: "";
+        background: #D5D5D5;
+    }
+
+    /* border */
+    .steps a {
+        color: #009fe9;
+        font-size: 14px;
+        line-height: 40px;
+        text-decoration: none;
+        padding-left: 8px;
+    }
+
+    .steps li {
+        float: left;
+        margin-left: 0;
+        height: 40px;
+        padding: 0 2px 0 20px;
+        list-style-type: none;
+        border-right: 3px solid white;
+        position: relative;
+        background-color: #edf9ff;
+    }
+
+        .steps li:first-child {
+            padding-left: 15px;
+        }
+
+        .steps li:nth-child(n + 2)::before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            border-left: 20px solid white;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            content: " ";
+        }
+
+        .steps li::after {
+            z-index: 1;
+            position: absolute;
+            top: 0;
+            right: -20px;
+            display: block;
+            border-left: 20px solid #edf9ff;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            content: "";
+            border-left-color: #edf9ff;
+        }
+
+        .steps li.current {
+            background-color: #009fe9;
+        }
+
+            .steps li.current a {
+                color: #fff;
+            }
+
+            .steps li.current::after {
+                border-left-color: #009fe9;
+            }
+
+            .steps li.current ~ li {
+                background-color: #ebebf0;
+            }
+
+                .steps li.current ~ li a {
+                    color: #8c8c8c;
+                }
+
+                .steps li.current ~ li::after {
+                    border-left-color: #ebebf0;
+                }
+
+</style>
+<br />
+<div class="form-horizontal" id="app">
+    <div>
+        <p class="alph-list__title"><span class="alph-list__alph"></span>請假單</p><br />
+        <table class="table table-striped table-bordered table-checkable order-column dataTable no-footer" id="searchTable" role="grid">
+            <tbody>
+                <tr>
+                    <td>
+                        請假單編號<br>
+                    </td>
+                    <td colspan="4">
+                        {{leaveFormNo}}<br>
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <th>申請人</th>
+                    <th>
+                        {{userName}}<br>
+                    </th>
+                    <th>請假狀態</th>
+                    <th @*v-if="isEdit===false"*@>
+                        <p>
+                            {{status}}
+                        </p>
+                        <br>
+                    </th>
+                    @*<th v-if="isEdit===true">
+                <p>
+                    <b><a target="_blank" href="/LeaveForm/LeaveRulesByStudent" style="color:red">請假規則</a></b>
+                </p>
+                <p>
+                    生理假(只限女生使用): {{physiologicalLeave}}
+                </p>
+                <br>
+            </th>*@
+                </tr>
+                <tr>
+                    <td>
+                        請假類型<br>
+                    </td>
+                    <td v-if="isEdit===false" colspan="4">
+                        {{typeOfLeave}}<br>
+                    </td>
+                    <td v-if="isEdit===true" colspan="4">
+                        <select v-model="typeOfLeave" class="form-control ">
+                            <option v-for="info in typeOfLeaves" :value="info">{{info}}</option>
+                        </select><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        開始日期<br>
+                    </td>
+                    <td v-if="isEdit===false">
+                        {{editBeginDate}}<br>
+                    </td>
+                    <td v-if="isEdit===true">
+                        <input type="datetime-local" placeholder="yyyy-MM-ddThh:mm" size="16" class="form-control " v-model="editBeginDate" /><br>
+                    </td>
+                    <td>
+                        結束日期<br>
+                    </td>
+                    <td v-if="isEdit===false">
+                        {{editEndDate}}<br>
+                    </td>
+                    <td v-if="isEdit===true">
+                        <input type="datetime-local" placeholder="yyyy-MM-ddThh:mm" size="16" class="form-control " v-model="editEndDate" /><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        請假數<br>
+                    </td>
+                    <td v-if="isEdit===false">
+                        共計 {{totalDay}}日又 {{totalHur}}時 (一天8小時計算)<br>
+                    </td>
+                    <td v-if="isEdit===true">
+                        共計 <input class="form-control" size="80" maxlength="255" type="number" step="1" min="0" max="30" value="0" v-model="totalDay" />日又
+                        <select v-model="totalHur" class="form-control ">
+                            <option v-for="info in totalHurs" :value="info">{{info}}</option>
+                        </select>時 (一天8小時計算)<br>
+                    </td>
+                    <td>
+                        事由<br>
+                    </td>
+                    <td v-if="isEdit===false">
+                        {{editReason}}<br>
+                    </td>
+                    <td v-if="isEdit===true">
+                        <textarea style="height: 150px;" v-model="editReason" class="form-control"></textarea><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        附加檔案<br>
+                    </td>
+                    <td v-if="isEdit===false" colspan="4">
+                        檔名命名:"今天的日期"請假證明-"學號"_檔案"順序"<br /> 範例:20210210請假證明-A115940001_檔案1<br /><br />
+                        <table class="table table-hover table-striped">
+
+                            <tbody>
+                                <tr v-for="info in dataFiles" :value="info">
+                                    <td><a href="javascript:void(0);" v-on:click="selectDataFile(info.Id)"><label style="color:darkgreen">{{info.FileName}}</label></a></td>
+                                </tr>
+                            </tbody>
+                        </table><br>
+                    </td>
+                    <td v-if="isEdit===true" colspan="4">
+                        檔名命名:"今天的日期"請假證明-"學號"_檔案"順序"<br /> 範例:20210210請假證明-A115940001_檔案1<br /><br />
+                        <table class="table table-hover table-striped">
+
+                            <tbody>
+                                <tr v-for="info in dataFiles" :value="info">
+                                    <td><a href="javascript:void(0);" v-on:click="deleteDataFile(info.Id)"><img style="width:35px;margin-bottom: 13px;" src="../Images/delete.png" /></a><a href="javascript:void(0);" v-on:click="selectDataFile(info.Id)"><label style="color:darkgreen">{{info.FileName}}</label></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <input type="file" class="multi" id="dataFile" name="dataFile" multiple maxlength="10" /><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        備註<br>
+                    </td>
+                    <td colspan="4">
+                        <p>1. 請假三日以上由導師及系主住核章</p>
+                        <p>2. 請病假住院請附上請假證明文件</p>
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        簽核流程<br>
+                    </td>
+                    <td colspan="4">
+                        <ul class="steps">
+                            @Html.Raw(@ViewBag.process)
+                        </ul>
+                        <br>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="text-align: center">
+            <span>
+                <button v-if="isRejectBtn===true" class="btn btn-danger" v-on:click="rejectBtn" type="button">不受理</button>
+                <button v-if="isCanceledBtn===true" class="btn btn-warning" v-on:click="canceledBtn" type="button">撤銷</button>
+                <button v-if="isEditBtn===true" class="btn btn-default" v-on:click="editBtn" type="button">更新</button>
+                <button v-if="isSendBtn===true" class="btn btn-danger" v-on:click="sendBtn" type="button">送單</button>
+                <button v-if="isAcceptBtn===true" class="btn btn-success" v-on:click="acceptBtn" type="button">受理</button>
+            </span>
+
+        </div>
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    var vm = new Vue({
+        components: {
+            Multiselect: window.VueMultiselect.default
+        },
+        data: {
+            processInstanceTablesId: @ViewBag.processInstanceTablesId,
+            leaveFormId: @ViewBag.leaveFormId,
+            leaveFormNo: "@ViewBag.leaveFormNo",
+            status: "@ViewBag.status",
+            isEdit: @ViewBag.isEdit,
+            isRejectBtn: @ViewBag.isRejectBtn,
+            isCanceledBtn: @ViewBag.isCanceledBtn,
+            isSendBtn: @ViewBag.isSendBtn,
+            isEditBtn: @ViewBag.isEditBtn,
+            isAcceptBtn: @ViewBag.isAcceptBtn,
+            userName: "@ViewBag.userName",
+            physiologicalLeave: "@ViewBag.physiologicalLeave",
+            typeOfLeaves: ["特休假", "公假", "事假", "病假", "公傷病假", "喪假", "結假", "產假","生理假"],
+            typeOfLeave: "@ViewBag.typeOfLeave",
+            editBeginDate: "@ViewBag.editBeginDate",
+            editEndDate: "@ViewBag.editEndDate",
+            totalDate: @ViewBag.totalDate,
+            totalDay: @ViewBag.totalDay,
+            totalHurs: [0,1,2,3,4,5,6,7],
+            totalHur: @ViewBag.totalHur,
+            editReason: "@ViewBag.editReason",
+            dataFiles: @Html.Raw(Json.Encode(@ViewBag.dataFiles)),
+            editLeaveFormByEmployee: {},
+            dataFilesDelete: [],
+        },
+        methods: {
+            selectDataFile: function (dataFilesId) { //下載文件
+                var getUrl = '/LeaveForm/DownloadFile?dataFilesId=' + dataFilesId;
+                window.location = getUrl;
+            },
+            deleteDataFile: function (dataFilesId) { //文件刪除動作,這邊資料庫不做任何動作,單純畫面呈現
+                vm.dataFilesDelete.push(dataFilesId);
+                vm.dataFiles = vm.dataFiles.filter(h => h.Id !== dataFilesId);
+            },
+            rejectBtn: function () {
+                swal({
+                    title: "確定不受理請假單\"" + vm.leaveFormNo + "\"?",
+                    text: "",
+                    type: "info",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    showLoaderOnConfirm: true,
+                },
+                    function () {
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/LeaveForm/EditRejectBtn",
+                            data: { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+                                window.location = '/LeaveForm/Index';
+
+                            }
+                        });
+                    });
+            },
+            canceledBtn: function () {
+                swal({
+                    title: "確定撤銷請假單\"" + vm.leaveFormNo + "\"?",
+                    text: "",
+                    type: "info",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    showLoaderOnConfirm: true,
+                },
+                    function () {
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/LeaveForm/EditCanceledBtn",
+                            data: { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+                                window.location = '/LeaveForm/Index';
+
+                            }
+                        });
+                    });
+            },
+            sendBtn: function () {
+                swal({
+                    title: "確定送出請假單\"" + vm.leaveFormNo + "\"?",
+                    text: "如有修改請按下更新按鈕後,在送出請假單!!!",
+                    type: "info",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    showLoaderOnConfirm: true,
+                },
+                    function () {
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/LeaveForm/EditSendBtn",
+                            data: { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+                                window.location = '/LeaveForm/Index';
+
+                            }
+                        });
+                    });
+            },
+            editBtn: function () {
+                
+                if (vm.editBeginDate == "" || vm.editBeginDate == undefined || vm.editEndDate == "" || vm.editEndDate == undefined
+                    || vm.editReason == "" || vm.editReason == undefined) {
+                    sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+                    return;
+                }
+                var beginDate = vm.editBeginDate;
+                var beginDate1 = beginDate.replace(/-/g, "/"); //利用regular expression  將'-' 代換成 '/'
+                var beginDate2 = beginDate1.replace(/T/g, " ");
+
+                var editBeginDate = new Date(beginDate2);
+
+                var endDate = vm.editEndDate;
+                var endDate1 = endDate.replace(/-/g, "/"); //利用regular expression  將'-' 代換成 '/'
+                var endDate2 = endDate1.replace(/T/g, " ");
+
+                var editEndDate = new Date(endDate2);
+
+
+                if (editBeginDate >= editEndDate) {
+                    sweetAlert("開始日期不可大於結束日期,請再做確認!!!", '', 'error');
+                    return;
+                }
+                else if (vm.totalDay == 0 && vm.totalHur == 0) {
+                    sweetAlert("請假數有誤,請再做確認!!!", '', 'error');
+                    return;
+                }
+
+
+                var total = (vm.totalDay * 8) + vm.totalHur;
+
+                if (vm.typeOfLeave == "生理假") {
+                    if (total > 8) {
+                        sweetAlert("每個月可以有1天的生理假,請再做確認!!!", '', 'error');
+                        return;
+                    }
+
+                    //判斷是否已經請過生理假
+                    $.ajax({
+
+                        method: 'POST',
+                        url: "/LeaveForm/IsUsePhysiologicalLeave",
+                        data: { name: "edit", beginDate: vm.editBeginDate, processInstanceTablesId: vm.processInstanceTablesId },
+                        dataType: 'json',
+
+                    }).then(function Callback(response) {
+
+                        if (response.error == false) {
+                            sweetAlert(response.message, '', 'error');
+                            return;
+                        }
+                        else {
+                            var fileNames = [];
+                            if (document.getElementsByClassName("MultiFile")[0] != null) { //有夾附件
+                                var totalFiles = document.getElementsByClassName("MultiFile")[0].MultiFile.files.length;
+                                for (var i = 0; i < totalFiles; i++) {
+                                    var fileName = document.getElementsByClassName("MultiFile")[0].MultiFile.files[i].name;
+                                    fileNames.push(fileName);
+                                }
+
+                                //判斷資料庫是否有此檔案
+                                $.ajax({
+
+                                    method: 'POST',
+                                    url: "/LeaveForm/isDataFileExist",
+                                    data: { fileNames: fileNames },
+                                    dataType: 'json',
+
+                                }).then(function Callback(response) {
+
+                                    if (response.error == false) {
+                                        sweetAlert(response.message, '', 'error');
+                                    }
+                                    else {
+                                        //此為資料庫沒有重複檔案,然後傳給後端dataFile
+                                        var formData = new FormData();
+                                        vm.editLeaveFormByEmployee = { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId, typeOfLeave: vm.typeOfLeave, agent: null, editBeginDate: vm.editBeginDate, editEndDate: vm.editEndDate, total: total, editReason: vm.editReason };
+
+                                        var totalFiles = document.getElementsByClassName("MultiFile")[0].MultiFile.files.length;
+                                        for (var i = 0; i < totalFiles; i++) {
+                                            var file = document.getElementsByClassName("MultiFile")[0].MultiFile.files[i];
+                                            formData.append("dataFile", file);
+                                        }
+
+                                        for (var x in vm.editLeaveFormByEmployee) {
+                                            formData.append(x, vm.editLeaveFormByEmployee[x]);
+                                        }
+
+                                        for (var i = 0; i < vm.dataFilesDelete.length; i++) {
+                                            formData.append("dataFilesDeleteList", vm.dataFilesDelete[i]);
+                                        }
+
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '/LeaveForm/EditLeaveFormSave',
+                                            data: formData,
+                                            processData: false,
+                                            contentType: false,
+                                            success: function (response) {
+                                                swal({
+                                                    title: response.message,
+                                                    type: "success",
+                                                },
+                                                    function (inputValue) {
+                                                        if (inputValue === false) {
+                                                            var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                            window.location = getUrl;
+                                                        } else {
+                                                            var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                            window.location = getUrl;
+                                                        }
+                                                    });
+                                            },
+                                        });
+                                    }
+                                });
+                            }
+                            else {
+
+                                var formData = new FormData();
+                                vm.editLeaveFormByEmployee = { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId, typeOfLeave: vm.typeOfLeave, agent: null, editBeginDate: vm.editBeginDate, editEndDate: vm.editEndDate, total: total, editReason: vm.editReason };
+                                formData.append("dataFile", null);
+                                for (var x in vm.editLeaveFormByEmployee) {
+                                    formData.append(x, vm.editLeaveFormByEmployee[x]);
+                                }
+
+                                for (var i = 0; i < vm.dataFilesDelete.length; i++) {
+                                    formData.append("dataFilesDeleteList", vm.dataFilesDelete[i]);
+                                }
+
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/LeaveForm/EditLeaveFormSave',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        swal({
+                                            title: response.message,
+                                            type: "success",
+                                        },
+                                            function (inputValue) {
+                                                if (inputValue === false) {
+                                                    var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                    window.location = getUrl;
+                                                } else {
+                                                    var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                    window.location = getUrl;
+                                                }
+                                            });
+                                    },
+                                });
+                            }
+
+                        }
+                    });
+
+                }
+                else {
+                    var fileNames = [];
+                    if (document.getElementsByClassName("MultiFile")[0] != null) { //有夾附件
+                        var totalFiles = document.getElementsByClassName("MultiFile")[0].MultiFile.files.length;
+                        for (var i = 0; i < totalFiles; i++) {
+                            var fileName = document.getElementsByClassName("MultiFile")[0].MultiFile.files[i].name;
+                            fileNames.push(fileName);
+                        }
+
+                        //判斷資料庫是否有此檔案
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/LeaveForm/isDataFileExist",
+                            data: { fileNames: fileNames },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+                                //此為資料庫沒有重複檔案,然後傳給後端dataFile
+                                var formData = new FormData();
+                                vm.editLeaveFormByEmployee = { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId, typeOfLeave: vm.typeOfLeave, agent: null, editBeginDate: vm.editBeginDate, editEndDate: vm.editEndDate, total: total, editReason: vm.editReason };
+
+                                var totalFiles = document.getElementsByClassName("MultiFile")[0].MultiFile.files.length;
+                                for (var i = 0; i < totalFiles; i++) {
+                                    var file = document.getElementsByClassName("MultiFile")[0].MultiFile.files[i];
+                                    formData.append("dataFile", file);
+                                }
+
+                                for (var x in vm.editLeaveFormByEmployee) {
+                                    formData.append(x, vm.editLeaveFormByEmployee[x]);
+                                }
+
+                                for (var i = 0; i < vm.dataFilesDelete.length; i++) {
+                                    formData.append("dataFilesDeleteList", vm.dataFilesDelete[i]);
+                                }
+
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/LeaveForm/EditLeaveFormSave',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        swal({
+                                            title: response.message,
+                                            type: "success",
+                                        },
+                                            function (inputValue) {
+                                                if (inputValue === false) {
+                                                    var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                    window.location = getUrl;
+                                                } else {
+                                                    var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                                    window.location = getUrl;
+                                                }
+                                            });
+                                    },
+                                });
+                            }
+                        });
+                    }
+                    else {
+
+                        var formData = new FormData();
+                        vm.editLeaveFormByEmployee = { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId, typeOfLeave: vm.typeOfLeave, agent: null, editBeginDate: vm.editBeginDate, editEndDate: vm.editEndDate, total: total, editReason: vm.editReason };
+                        formData.append("dataFile", null);
+                        for (var x in vm.editLeaveFormByEmployee) {
+                            formData.append(x, vm.editLeaveFormByEmployee[x]);
+                        }
+
+                        for (var i = 0; i < vm.dataFilesDelete.length; i++) {
+                            formData.append("dataFilesDeleteList", vm.dataFilesDelete[i]);
+                        }
+
+
+                        $.ajax({
+                            type: "POST",
+                            url: '/LeaveForm/EditLeaveFormSave',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (response) {
+                                swal({
+                                    title: response.message,
+                                    type: "success",
+                                },
+                                    function (inputValue) {
+                                        if (inputValue === false) {
+                                            var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                            window.location = getUrl;
+                                        } else {
+                                            var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + vm.processInstanceTablesId + '&leaveFormId=' + vm.leaveFormId + '&leaveFormNo=' + vm.leaveFormNo + '&status=' + vm.status;
+                                            window.location = getUrl;
+                                        }
+                                    });
+                            },
+                        });
+                    }
+                }
+
+                
+            },
+            acceptBtn: function () {
+                swal({
+                    title: "確定受理請假單\"" + vm.leaveFormNo + "\"?",
+                    text: "如有修改請按下更新按鈕後,在受理請假單!!!",
+                    type: "info",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    showLoaderOnConfirm: true,
+                },
+                    function () {
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/LeaveForm/EditAcceptBtn",
+                            data: { processInstanceTablesId: vm.processInstanceTablesId, leaveFormId: vm.leaveFormId },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+                                window.location = '/LeaveForm/Index';
+
+                            }
+                        });
+                    });
+            }
+        }
+    }).$mount('#app')
+    
+</script>
