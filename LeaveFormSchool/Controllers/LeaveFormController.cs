@@ -26,22 +26,22 @@ namespace LeaveFormSchool.Controllers
             LeaveFormSchoolContext db = new LeaveFormSchoolContext();
             List<LeaveFormList> leaveFormLists = new List<LeaveFormList>();
             string sIDNo = Session["sIDNo"].ToString();
-            var applicationUser = db.ApplicationUser.FirstOrDefault(x=>x.LogonId== sIDNo);
+            var applicationUser = db.ApplicationUser.FirstOrDefault(x => x.LogonId == sIDNo);
             //進行中包含:已申請,已受理,不受理
-            var processInstanceTableList = db.ProcessInstanceTable.Where(x => (x.PITStatusId != 3 && x.PITStatusId != 4) && (x.StarterId == applicationUser.Id || x.ToDoerId == applicationUser.Id)).ToList();
+            var processInstanceTableList = db.ProcessInstanceTable.Where(x => (x.PITStatusId != 3 && x.PITStatusId != 4) && (x.StarterId == applicationUser.Id || x.ToDoerId == applicationUser.Id)).OrderByDescending(x => x.Id).ToList();
 
             //分頁邏輯
             var pagnum = 1; //取得資料的起始頁數
             var pagedata = 2; //每頁顯示資料筆數
-            var pageStar = (processInstanceTableList.Count()==0)?0:((pagnum - 1)* pagedata) +1; //取得起點數
+            var pageStar = (processInstanceTableList.Count() == 0) ? 0 : ((pagnum - 1) * pagedata) + 1; //取得起點數
             int leaveFormCount = processInstanceTableList.Count(); //請假單數量
             int totPage = 1; //資料總頁數
-            if (leaveFormCount % pagedata != 0) 
+            if (leaveFormCount % pagedata != 0)
                 totPage = (leaveFormCount / pagedata) + 1;
             else
                 totPage = (leaveFormCount / pagedata);
 
-            var PagerData = CommonToolServices.GetDisplayPages(pagnum, pagedata, totPage); 
+            var PagerData = CommonToolServices.GetDisplayPages(pagnum, pagedata, totPage);
             ViewBag.dataPage = PagerData;
 
             var pageEnd = 1; //取得末點數
@@ -71,7 +71,7 @@ namespace LeaveFormSchool.Controllers
                     {
                         leaveFormList.Status = "已申請";
                     }
-                    else if(processInstanceTableList[i - 1].PITStatusId == 2)
+                    else if (processInstanceTableList[i - 1].PITStatusId == 2)
                     {
                         leaveFormList.Status = processNodeTable.NodeName + ": 已受理";
                     }
@@ -131,7 +131,7 @@ namespace LeaveFormSchool.Controllers
         }
 
         [HttpPost]
-        public JsonResult LeaveFormSearch(string status,int pagnum, int pagedata)
+        public JsonResult LeaveFormSearch(string status, int pagnum, int pagedata)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace LeaveFormSchool.Controllers
                 List<LeaveFormList> leaveFormLists = new List<LeaveFormList>();
                 string sIDNo = Session["sIDNo"].ToString();
                 var applicationUser = db.ApplicationUser.FirstOrDefault(x => x.LogonId == sIDNo);//分頁資料
-                int leaveFormCount =1;
+                int leaveFormCount = 1;
                 var pageStar = 1; //取得起點數
                 var pageEnd = 1; //取得末點數
                 int totPage = 1; //資料總頁數
@@ -148,7 +148,7 @@ namespace LeaveFormSchool.Controllers
                 if (status == "進行中")
                 {
                     //進行中包含:已申請,已受理,不受理
-                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => (x.PITStatusId != 3 && x.PITStatusId != 4) && (x.StarterId == applicationUser.Id || x.ToDoerId == applicationUser.Id)).ToList();
+                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => (x.PITStatusId != 3 && x.PITStatusId != 4) && (x.StarterId == applicationUser.Id || x.ToDoerId == applicationUser.Id)).OrderByDescending(x => x.Id).ToList();
 
                     //分頁邏輯
                     pageStar = (processInstanceTableList.Count() == 0) ? 0 : ((pagnum - 1) * pagedata) + 1; //取得起點數
@@ -206,13 +206,13 @@ namespace LeaveFormSchool.Controllers
                             leaveFormLists.Add(leaveFormList);
                         }
                     }
-                    
-                    
+
+
                 }
                 else if (status == "已完成")
                 {
                     //已完成包含:已同意
-                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => x.PITStatusId == 4 && x.StarterId == applicationUser.Id).ToList();
+                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => x.PITStatusId == 4 && x.StarterId == applicationUser.Id).OrderByDescending(x => x.Id).ToList();
 
                     //分頁邏輯
                     pageStar = (processInstanceTableList.Count() == 0) ? 0 : ((pagnum - 1) * pagedata) + 1; //取得起點數
@@ -274,7 +274,7 @@ namespace LeaveFormSchool.Controllers
                 else if (status == "撤銷")
                 {
                     //撤銷中包含:已撤銷
-                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => x.PITStatusId == 3 && x.StarterId == applicationUser.Id).ToList();
+                    var processInstanceTableList = db.ProcessInstanceTable.Where(x => x.PITStatusId == 3 && x.StarterId == applicationUser.Id).OrderByDescending(x => x.Id).ToList();
 
                     //分頁邏輯
                     pageStar = (processInstanceTableList.Count() == 0) ? 0 : ((pagnum - 1) * pagedata) + 1; //取得起點數
@@ -333,9 +333,9 @@ namespace LeaveFormSchool.Controllers
                         }
                     }
                 }
-                
 
-                return Json(new { leaveFormes = leaveFormLists, pager = PagerData, totPage = leaveFormCount, pageStar  = pageStar, pageEnd = pageEnd });
+
+                return Json(new { leaveFormes = leaveFormLists, pager = PagerData, totPage = leaveFormCount, pageStar = pageStar, pageEnd = pageEnd });
             }
             catch (Exception ex)
             {
@@ -344,7 +344,7 @@ namespace LeaveFormSchool.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditLeaveFormByEmployee(int processInstanceTablesId,int leaveFormId,string leaveFormNo,string status)
+        public ActionResult EditLeaveFormByEmployee(int processInstanceTablesId, int leaveFormId, string leaveFormNo, string status)
         {
             LeaveFormSchoolContext db = new LeaveFormSchoolContext();
             if (Session["sIDNo"] == null)
@@ -396,13 +396,13 @@ namespace LeaveFormSchool.Controllers
                     {
                         if (processNodeTable.NodeOrder == nodeOrder) { process += "<li class=\"current\"><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已撤銷</a></li> "; }
                         else { process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已撤銷</a></li> "; }
-                        
+
                     }
                     else
                     {
                         if (processNodeTable.NodeOrder == nodeOrder) { process += "<li class=\"current\"><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已申請</a></li> "; }
                         else { process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已申請</a></li> "; }
-                        
+
                     }
 
 
@@ -461,10 +461,11 @@ namespace LeaveFormSchool.Controllers
                         }
                     }
                     else if (processInstanceTable.PITStatusId == 2) { process += "<li class=\"current\" ><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
+                    else if (processInstanceTable.PITStatusId == 3) { process += "<li class=\"current\" ><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
                     else if (processInstanceTable.PITStatusId == 4) { process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
                     else if (processInstanceTable.PITStatusId == 5) { process += "<li class=\"current\"><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":不受理</a></li> "; }
-                    
-                    
+
+
                 }
                 else if (processNodeTable.NodeOrder == numberOfTimes)
                 {
@@ -493,7 +494,7 @@ namespace LeaveFormSchool.Controllers
             }
 
             //下載文件
-            var leaveFormCertifiedDocs = db.LeaveFormCertifiedDoc.Where(x=>x.LeaveFormId == processInstanceTable.LeaveFormId).ToList();
+            var leaveFormCertifiedDocs = db.LeaveFormCertifiedDoc.Where(x => x.LeaveFormId == processInstanceTable.LeaveFormId).ToList();
             List<CertifiedDocDto> CertifiedDocDtoList = new List<CertifiedDocDto>();
             foreach (var l in leaveFormCertifiedDocs)
             {
@@ -506,7 +507,7 @@ namespace LeaveFormSchool.Controllers
                 CertifiedDocDtoList.Add(CertifiedDocDto);
 
             }
-            
+
             //生理假規則
             var leaveForms = db.LeaveForm.Where(x => x.LogonId == sIDNo && x.IsDelete == false && x.TypeOfLeaveId == 12 && x.BeginDate.Value.Year == DateTime.Now.Year && x.BeginDate.Value.Month == DateTime.Now.Month);
 
@@ -637,7 +638,7 @@ namespace LeaveFormSchool.Controllers
         public ActionResult DownloadFile(int dataFilesId)
         {
             LeaveFormSchoolContext db = new LeaveFormSchoolContext();
-            var certifiedDoc = db.CertifiedDoc.FirstOrDefault(x=>x.Id == dataFilesId);
+            var certifiedDoc = db.CertifiedDoc.FirstOrDefault(x => x.Id == dataFilesId);
 
             string filepath = Server.MapPath("/ProofOfLeaveForm/" + certifiedDoc.FileName);
             //取得檔案名稱
@@ -886,7 +887,7 @@ namespace LeaveFormSchool.Controllers
 
             //不受理
             LeaveFormSchoolContext db = new LeaveFormSchoolContext();
-            var processInstanceTable = db.ProcessInstanceTable.FirstOrDefault(x=>x.Id == processInstanceTablesId);
+            var processInstanceTable = db.ProcessInstanceTable.FirstOrDefault(x => x.Id == processInstanceTablesId);
             var nextProcessNodeTableId = processInstanceTable.NextProcessNodeTableId;
             var processNodeTable1 = db.ProcessNodeTable.FirstOrDefault(x => x.Id == nextProcessNodeTableId);
 
@@ -947,7 +948,7 @@ namespace LeaveFormSchool.Controllers
             leaveForm.LastModifierUserId = applicationUser.Id;
             leaveForm.IsDelete = true;
             db.SaveChanges();
-            
+
             processInstanceTable.PITStatusId = 3; //撤銷
             processInstanceTable.UpdateTime = DateTime.Now;
             processInstanceTable.Remarks = "撤銷請假單";
@@ -1070,7 +1071,7 @@ namespace LeaveFormSchool.Controllers
             processInstanceTable.NextNodeSN = processNodeTable2.NodeSN;
             processInstanceTable.NextProcessNodeTableId = processNodeTable2.Id;
             db.SaveChanges();
-            
+
 
             return Json(new { message = "" });
         }
@@ -1114,7 +1115,7 @@ namespace LeaveFormSchool.Controllers
             leaveForm.Remarks = "更新假單";
             db.SaveChanges();
 
-            if (dataFilesDeleteList!=null)
+            if (dataFilesDeleteList != null)
             {
                 if (dataFilesDeleteList.Count() > 0)
                 {
@@ -1141,7 +1142,7 @@ namespace LeaveFormSchool.Controllers
 
                 }
             }
-            
+
 
             if (dataFile.Count() != 0)
             {
@@ -1288,8 +1289,8 @@ namespace LeaveFormSchool.Controllers
                     processInstanceTable.NextNodeSN = processNodeTable3.NodeSN;
                     processInstanceTable.NextProcessNodeTableId = processNodeTable3.Id;
                 }
-                
-                
+
+
             }
             else
             {
@@ -1316,14 +1317,15 @@ namespace LeaveFormSchool.Controllers
 
             LeaveFormSchoolContext db = new LeaveFormSchoolContext();
             string sIDNo = Session["sIDNo"].ToString();
-            
-            var applicationUser = db.ApplicationUser.FirstOrDefault(x=>x.LogonId == sIDNo);
+
+            var applicationUser = db.ApplicationUser.FirstOrDefault(x => x.LogonId == sIDNo);
 
             //寫入多筆代理人
             var agent = "";
             List<string> agentList = new List<string>();
             var employees = db.Employee.Where(x => x.IsActive == true && x.LogonId != sIDNo).ToList();
-            foreach (var employee in employees) {
+            foreach (var employee in employees)
+            {
                 var e = employee.ApplicationUser.JobType.SchoolDepartment.Department + "-" + employee.LogonId;
                 agentList.Add(e);
             }
@@ -1331,10 +1333,10 @@ namespace LeaveFormSchool.Controllers
 
             //簽核流程
             var nodeSN = db.ProcessNodeTable.FirstOrDefault(x => x.JobTypeId == applicationUser.JobTypeId && x.NodeOrder == 1).NodeSN;
-            var numberOfTimes = db.ProcessNodeTable.FirstOrDefault(x=>x.JobTypeId == applicationUser.JobTypeId && x.NodeOrder == 1).NumberOfTimes;
+            var numberOfTimes = db.ProcessNodeTable.FirstOrDefault(x => x.JobTypeId == applicationUser.JobTypeId && x.NodeOrder == 1).NumberOfTimes;
             string nodeSNNext = nodeSN;
             string process = "";
-            for (int i=1;i<= numberOfTimes; i++)
+            for (int i = 1; i <= numberOfTimes; i++)
             {
                 var processNodeTable = db.ProcessNodeTable.FirstOrDefault(x => x.NodeSN == nodeSNNext);
 
@@ -1351,11 +1353,11 @@ namespace LeaveFormSchool.Controllers
                 {
                     process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":未同意</a></li> ";
                 }
-                else if(processNodeTable.NodeOrder != 1)
+                else if (processNodeTable.NodeOrder != 1)
                 {
                     process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":未受理</a></li> ";
                 }
-                
+
 
                 if (processNodeTable.NodeName != "結案")
                 {
@@ -1379,7 +1381,7 @@ namespace LeaveFormSchool.Controllers
             //生理假規則
             var leaveForms = db.LeaveForm.Where(x => x.LogonId == sIDNo && x.IsDelete == false && x.TypeOfLeaveId == 12 && x.BeginDate.Value.Year == DateTime.Now.Year && x.BeginDate.Value.Month == DateTime.Now.Month);
 
-            ViewBag.userName = applicationUser.UserName+" "+"("+ applicationUser.LogonId+")";
+            ViewBag.userName = applicationUser.UserName + " " + "(" + applicationUser.LogonId + ")";
             ViewBag.firstTime = applicationUser.EnrollmentDate.Value.ToString("yyyy-MM-dd") + "(任職" + totalYear + "年" + date3 + "天" + ")";
             ViewBag.specialVacation = getLeaveStatusFormByEmployees.ToList()[0].LeaveRulesString;
             ViewBag.personalLeave = getLeaveStatusFormByEmployees.ToList()[1].LeaveRulesString;
@@ -1407,7 +1409,7 @@ namespace LeaveFormSchool.Controllers
             string sIDNo = Session["sIDNo"].ToString();
 
             var applicationUser = db.ApplicationUser.FirstOrDefault(x => x.LogonId == sIDNo);
-            
+
             //簽核流程
             var nodeSN = db.ProcessNodeTable.FirstOrDefault(x => x.JobTypeId == applicationUser.JobTypeId && x.NodeOrder == 1).NodeSN;
             var numberOfTimes = db.ProcessNodeTable.FirstOrDefault(x => x.JobTypeId == applicationUser.JobTypeId && x.NodeOrder == 1).NumberOfTimes;
@@ -1444,10 +1446,10 @@ namespace LeaveFormSchool.Controllers
             }
 
             //生理假規則
-            var leaveForms = db.LeaveForm.Where(x => x.LogonId == sIDNo && x.IsDelete==false && x.TypeOfLeaveId == 12 && x.BeginDate.Value.Year == DateTime.Now.Year && x.BeginDate.Value.Month == DateTime.Now.Month);
+            var leaveForms = db.LeaveForm.Where(x => x.LogonId == sIDNo && x.IsDelete == false && x.TypeOfLeaveId == 12 && x.BeginDate.Value.Year == DateTime.Now.Year && x.BeginDate.Value.Month == DateTime.Now.Month);
 
             ViewBag.userName = applicationUser.UserName + " " + "(" + applicationUser.LogonId + ")";
-            ViewBag.physiologicalLeave = (leaveForms.Count()>0)? "這個月已使用" : "這個月尚未使用";
+            ViewBag.physiologicalLeave = (leaveForms.Count() > 0) ? "這個月已使用" : "這個月尚未使用";
             ViewBag.process = process;
 
             return View();
@@ -1464,7 +1466,7 @@ namespace LeaveFormSchool.Controllers
         }
 
         [HttpPost]
-        public JsonResult IsUsePhysiologicalLeave(string name,string beginDate, int processInstanceTablesId)
+        public JsonResult IsUsePhysiologicalLeave(string name, string beginDate, int processInstanceTablesId)
         {
             try
             {
@@ -1481,7 +1483,7 @@ namespace LeaveFormSchool.Controllers
                     var leaveForms = db.LeaveForm.Where(x => x.LogonId == sIDNo && x.IsDelete == false && x.TypeOfLeaveId == 12 && x.BeginDate.Value.Year == BeginDate.Year && x.BeginDate.Value.Month == BeginDate.Month);
                     if (leaveForms.Count() > 0) { throw new Exception("您的生理假已超過您有的天數,請再做確認!!!"); }
                 }
-                else if (name == "edit") 
+                else if (name == "edit")
                 {
                     var processInstanceTable = db.ProcessInstanceTable.FirstOrDefault(x => x.Id == processInstanceTablesId);
                     var leaveFormId = processInstanceTable.LeaveFormId;
@@ -1511,7 +1513,7 @@ namespace LeaveFormSchool.Controllers
                 foreach (var fileName in fileNames)
                 {
                     LeaveFormSchoolContext db = new LeaveFormSchoolContext();
-                    var GetByFileName = db.CertifiedDoc.Where(x=>x.FileName == fileName).Count()== 0 ? false : true;
+                    var GetByFileName = db.CertifiedDoc.Where(x => x.FileName == fileName).Count() == 0 ? false : true;
                     if (GetByFileName)
                     {
                         strFileName += fileName + ", ";
@@ -1540,7 +1542,7 @@ namespace LeaveFormSchool.Controllers
 
             return Json(new { message = string.Format("請假單已成功申請~") });
         }
-        
+
 
     }
 }
