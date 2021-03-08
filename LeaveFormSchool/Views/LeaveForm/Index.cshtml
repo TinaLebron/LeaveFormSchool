@@ -1,0 +1,336 @@
+﻿@{
+    ViewBag.Title = "LeaveForm";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+}
+
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/vue.min.js"></script>
+@*<link href="~/Content/Table/sb-admin-2.min.css">
+<link href="~/Content/Table/dataTables.bootstrap4.min.css">
+<script src="~/Scripts/Table/jquery.min.js"></script>
+<script src="~/Scripts/Table/bootstrap.bundle.min.js"></script>
+<script src="~/Scripts/Table/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/Table/dataTables.bootstrap4.min.js"></script>
+<script src="~/Scripts/Table/datatables-demo.js"></script>*@
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+    .card {
+        position: relative !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        word-wrap: break-word !important;
+        background-color: #fff !important;
+        background-clip: border-box !important;
+        border: 1px solid #e3e6f0 !important;
+        border-radius: .35rem !important;
+    }
+    .card-header {
+        padding: .75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .table-responsive1 {
+        padding: .75rem 1.25rem;
+        min-height: .01%;
+        /* overflow-x: auto; */
+        /* width: 100%; */
+    }
+
+    body {
+        padding-top: 70px;
+        /*font-family*/
+        font-family: "Helvetica", "Arial","LiHei Pro","黑體-繁","微軟正黑體", sans-serif;
+        line-height: 2;
+        font-size: 15px;
+        font-weight: 300;
+    }
+    /*pagination style*/
+
+    /*控制首末按鈕disabled*/
+    .btndisabled a {
+        pointer-events: none;
+        cursor: not-allowed;
+        background-color: #fafafa !important;
+        color: #b3b6bc !important;
+    }
+
+    /*覆寫bootstrap*/
+    .pagination-sm > li > a, .pagination-sm > li > span {
+        font-size: 15px !important;
+        line-height: 1 !important;
+    }
+</style>
+<br/>
+<div id="app">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="font-size:18px;font-weight:800;">
+            <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+            &nbsp;查詢條件
+        </div>
+        <div class="panel-body">
+            <div class="col-sm-12" style="line-height:35px">
+                <select v-model="status" @@change="search"  class="form-controlCustom ">
+                    <option v-for="info in statuses" :value="info">{{info}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div>
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <a v-if="isEmp===true" href="/LeaveForm/AddLeaveFormByEmployee" title="請假單"><img style="width:35px;margin-bottom: 13px;" src="../Images/add.png" /></a>
+                <a v-if="isEmp===false" href="/LeaveForm/AddLeaveFormByStudent" title="請假單"><img style="width:35px;margin-bottom: 13px;" src="../Images/add.png" /></a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive1">
+                    <table class="table table-bordered" id="dataTable" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>申請人</th>
+                                <th>請假單編號</th>
+                                <th>請假類型</th>
+                                <th>請假開始時間</th>
+                                <th>請假結束時間</th>
+                                <th>假單情況</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="info in leaveFormes" :value="info">
+                                <td>{{info.StarterString}}</td>
+                                <td v-if="info.IsUserEmp===true"><a href="javascript:void(0);" v-on:click="editLeaveFormByEmployee(info)">{{info.LeaveFormNo}}</a></td>
+                                <td v-if="info.IsUserEmp===false"><a href="javascript:void(0);" v-on:click="editLeaveFormByStudent(info)">{{info.LeaveFormNo}}</a></td>
+                                <td>{{info.TypeOfLeaveName}}</td>
+                                <td>{{info.BeginDate}}</td>
+                                <td>{{info.EndDate}}</td>
+                                <td>{{info.Status}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="fixed-table-pagination">
+                        <div class="float-left pagination-detail">
+                            <span class="pagination-info">
+                                Showing {{pageStar}} to {{pageEnd}} of {{totPage}} rows
+                            </span>
+                            <span class="page-list">
+                                <span>
+                                    <select v-model="pagedata" @@change="perPage" class="form-controlCustom ">
+                                        <option v-for="info in pagedatas" :value="info">{{info}}</option>
+                                    </select>
+                                    
+                                </span> 
+                                rows per page
+                            </span>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <div class="container-fluid text-center py-3">
+                            <div class="row">
+                                <div class="pagination">
+                                    <ul class="pagination pagination-sm">
+                                        <li class="page-item" v-bind:class="[dataPage.EnableLeft ? '' : 'btndisabled']">
+                                            <a class="page-link" href="#" v-on:click="setPage(1)">第一頁</a>
+                                        </li>
+                                        <li class="page-item" v-bind:class="[dataPage.EnableLeft ? '' : 'btndisabled']">
+                                            <a class="page-link" v-on:click="setPage(parseInt(dataPage.CurrentPage)-1)" href="#">上一頁</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" v-show="dataPage.DisplayLeftEllipsesZone" v-on:click="setPage(dataPage.LeftEllipsIndex)" href="#">...</a>
+                                        </li>
+                                        <li class="page-item" v-for="pageNum in dataPage.DisplayPageZone" v-bind:class="[(parseInt(pageNum) === parseInt(dataPage.CurrentPage)) ? 'active' : '']">
+                                            <a class="page-link" href="#" v-on:click="setPage(pageNum)">{{pageNum}}</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" v-show="dataPage.DisplayRightEllipsesZone" v-on:click="setPage(dataPage.RightEllipsIndex)">...</a>
+                                        </li>
+                                        <li class="page-item" v-bind:class="[dataPage.EnableRight ? '' : 'btndisabled']">
+                                            <a class="page-link" href="#" v-on:click="setPage(parseInt(dataPage.CurrentPage)+1)">下一頁</a>
+                                        </li>
+                                        <li class="page-item" v-bind:class="[dataPage.EnableRight ? '' : 'btndisabled']">
+                                            <a class="page-link" href="#" v-on:click="setPage(dataPage.TotalPage)">最末頁</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            statuses: ["進行中", "已完成", "撤銷"],
+            status: "進行中",
+            isEmp: @ViewBag.isEmp,
+            leaveFormes: @Html.Raw(Json.Encode(@ViewBag.leaveFormes)),
+            dataPage: @Html.Raw(Json.Encode(@ViewBag.dataPage)),
+            pagedatas: [2, 4, 6, 10],
+            pagnum: @ViewBag.pagnum,//取得資料的起始頁數
+            pagedata: @ViewBag.pagedata,//每頁顯示資料筆數
+            pageStar: @ViewBag.pageStar,//取得起點數
+            pageEnd: @ViewBag.pageEnd,//取得末點數
+            totPage: @ViewBag.totPage,//資料總頁數
+            pageMaxNum: @ViewBag.pageMaxNum,//第pagnum頁的最大筆數
+            curPage: 1,//目前所在的頁數
+        },
+        methods: {
+            perPage: function () {
+                var page = 1;
+                if (vm.totPage % vm.pagedata != 0) {
+                    page = parseInt(vm.totPage / vm.pagedata) + 1;
+                }
+                else {
+                    page = parseInt(vm.totPage / vm.pagedata);
+                }
+
+                if (page > vm.curPage) {
+                    page = vm.curPage;
+                }
+                    
+                $.ajax({
+
+                    method: 'POST',
+                    url: "/LeaveForm/LeaveFormSearch",
+                    data: { status: vm.status, pagnum: page, pagedata: vm.pagedata },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.error == false) {
+                        sweetAlert(response.message, '', 'error');
+                    }
+                    else {
+                        vm.dataPage = response.pager;
+                        vm.leaveFormes = response.leaveFormes;
+                        vm.pageStar = response.pageStar;
+                        vm.pageEnd = response.pageEnd;
+                        vm.totPage = response.totPage;
+                        vm.curPage = page;
+                    }
+                });
+            },
+            setPage: function (page) {
+                $.ajax({
+
+                    method: 'POST',
+                    url: "/LeaveForm/LeaveFormSearch",
+                    data: { status: vm.status, pagnum: page, pagedata: vm.pagedata },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.error == false) {
+                        sweetAlert(response.message, '', 'error');
+                    }
+                    else {
+                        vm.dataPage = response.pager;
+                        vm.leaveFormes = response.leaveFormes;
+                        vm.pageStar = response.pageStar;
+                        vm.pageEnd = response.pageEnd;
+                        vm.totPage = response.totPage;
+                        vm.curPage = page;
+                    }
+                });
+            },
+            search: function () {
+                $.ajax({
+
+                    method: 'POST',
+                    url: "/LeaveForm/LeaveFormSearch",
+                    data: { status: vm.status, pagnum: vm.pagnum, pagedata: vm.pagedata },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.error == false) {
+                        sweetAlert(response.message, '', 'error');
+                    }
+                    else {
+                        vm.dataPage = response.pager;
+                        vm.leaveFormes = response.leaveFormes;
+                        vm.pageStar = response.pageStar;
+                        vm.pageEnd = response.pageEnd;
+                        vm.totPage = response.totPage;
+                        vm.curPage = vm.pagnum;
+                    }
+                });
+            },
+            editLeaveFormByEmployee: function (info) {
+                var getUrl = '/LeaveForm/EditLeaveFormByEmployee?processInstanceTablesId=' + info.ProcessInstanceTablesId + '&leaveFormId=' + info.LeaveFormId + '&leaveFormNo=' + info.LeaveFormNo + '&status=' + vm.status;
+                window.location = getUrl;
+                
+            },
+            editLeaveFormByStudent: function (info) {
+                var getUrl = '/LeaveForm/EditLeaveFormByStudent?processInstanceTablesId=' + info.ProcessInstanceTablesId + '&leaveFormId=' + info.LeaveFormId + '&leaveFormNo=' + info.LeaveFormNo + '&status=' + vm.status;
+                window.location = getUrl;
+            },
+        }
+        
+    });
+
+</script>

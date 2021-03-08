@@ -60,12 +60,65 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityFramework\LeaveFormSchoolContext.cs" />
+    <Compile Include="EntityFramework\SeedData\InitialLeaveFormSchooltDbBuilder.cs" />
+    <Compile Include="EntityFramework\SeedData\SchoolInitializer.cs" />
+    <Compile Include="Migrations\202102081123526_InitialMigrations.cs" />
+    <Compile Include="Migrations\202102081123526_InitialMigrations.designer.cs">
+      <DependentUpon>202102081123526_InitialMigrations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102090921013_GetLeaveStatusFormByEmployees.cs" />
+    <Compile Include="Migrations\202102090921013_GetLeaveStatusFormByEmployees.designer.cs">
+      <DependentUpon>202102090921013_GetLeaveStatusFormByEmployees.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102180900514_AddLeaveFormNo.cs" />
+    <Compile Include="Migrations\202102180900514_AddLeaveFormNo.designer.cs">
+      <DependentUpon>202102180900514_AddLeaveFormNo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102220202149_AddNextNodeToProcessInstanceTable.cs" />
+    <Compile Include="Migrations\202102220202149_AddNextNodeToProcessInstanceTable.designer.cs">
+      <DependentUpon>202102220202149_AddNextNodeToProcessInstanceTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102220242231_AddFirstNodeToProcessInstanceTable.cs" />
+    <Compile Include="Migrations\202102220242231_AddFirstNodeToProcessInstanceTable.designer.cs">
+      <DependentUpon>202102220242231_AddFirstNodeToProcessInstanceTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202102221152223_AddLastModifierTimeToLeaveForm.cs" />
+    <Compile Include="Migrations\202102221152223_AddLastModifierTimeToLeaveForm.designer.cs">
+      <DependentUpon>202102221152223_AddLastModifierTimeToLeaveForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LeaveFormSchool.Core\LeaveFormSchool.Core.csproj">
+      <Project>{11821358-BF32-448A-88B7-4D0E01C96FE4}</Project>
+      <Name>LeaveFormSchool.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202102081123526_InitialMigrations.resx">
+      <DependentUpon>202102081123526_InitialMigrations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102090921013_GetLeaveStatusFormByEmployees.resx">
+      <DependentUpon>202102090921013_GetLeaveStatusFormByEmployees.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102180900514_AddLeaveFormNo.resx">
+      <DependentUpon>202102180900514_AddLeaveFormNo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102220202149_AddNextNodeToProcessInstanceTable.resx">
+      <DependentUpon>202102220202149_AddNextNodeToProcessInstanceTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102220242231_AddFirstNodeToProcessInstanceTable.resx">
+      <DependentUpon>202102220242231_AddFirstNodeToProcessInstanceTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102221152223_AddLastModifierTimeToLeaveForm.resx">
+      <DependentUpon>202102221152223_AddLastModifierTimeToLeaveForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

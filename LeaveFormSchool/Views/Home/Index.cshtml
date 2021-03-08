@@ -2,30 +2,149 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<div id="app">
+    <div>
+        <div class="row" style="justify-content: center">
+            
+            <div class="login-box2 col-sm-6" style="height:450px;width: 500px;">
+                <div class="p-5">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">請假系統</h1>
+                    </div>
+                    <form class="user">
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" v-model="sIDNo" autocapitalize="off" autocorrect="off" placeholder="學號">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="密碼" v-model="password">
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="customCheck" v-model="rememberMe" value="true">
+                                <label class="custom-control-label" for="customCheck">
+                                    記住我
+                                </label>
+                            </div>
+                        </div>
+                        <a href="javascript:void(0);" class="btn btn-primary btn-user btn-block" v-on:click="singIn">
+                            登入
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+<script src="~/Scripts/vue.js"></script>
+<script src="~/Scripts/vue.min.js"></script>
+
+<style>
+    .login-box1 {
+        box-shadow: 0 0 0 1px #fff;
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        padding: 15px;
+        width: 320px;
+        background-color: #dbdbdb;
+    }
+
+    .login-box2 {
+        box-shadow: 0 0 0 1px #fff;
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        padding: 15px;
+        width: 320px;
+        background-color: #ffffff;
+    }
+
+    .float-right {
+        float: right !important;
+    }
+
+    .row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+
+    body {
+        background-color: #f4f4f4 !important;
+    }
+
+    form.user .form-control-user {
+        font-size: .8rem;
+        border-radius: 10rem;
+        padding: 1.5rem 1rem;
+    }
+
+    .custom-control-label::after {
+        position: absolute;
+        top: .25rem;
+        left: -1.5rem;
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        content: "";
+        background: no-repeat 50%/50% 50%;
+    }
+
+    input, select, textarea {
+        max-width: 100% !important;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+    (function () {
+
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                sIDNo: "",
+                password: "",
+                rememberMe: true,
+            },
+            methods: {
+                singIn: function () {
+                    if (vm.sIDNo == null || vm.sIDNo == "" || vm.password == null || vm.password == "") {
+                        swal('請確認帳號密碼是否有輸入!!!', '', 'error');
+                        vm.sIDNo = ''
+                        vm.password = ''
+                        console.log(vm.rememberMe);
+                    }
+                    else {
+                        $.ajax({
+
+                            method: 'POST',
+                            url: "/Home/AccountLogin",
+                            data: { sIDNo: vm.sIDNo, password: vm.password, rememberMe: vm.rememberMe },
+                            dataType: 'json',
+
+                        }).then(function Callback(response) {
+
+                            if (response.error == false) {
+                                sweetAlert(response.message, '', 'error');
+                            }
+                            else {
+
+                                window.location.href = response.url;
+                                location.reload();
+                            }
+                            vm.sIDNo = ''
+                            vm.password = ''
+                        });
+                    }
+                }
+            }
+        });
+
+        if ("@ViewBag.LogonId" != "") {
+            vm.sIDNo = "@ViewBag.LogonId";
+            vm.password = "@ViewBag.PasswordHash";
+        }
+
+    })();
+</script>
