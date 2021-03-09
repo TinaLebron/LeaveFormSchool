@@ -7,7 +7,7 @@
 
 • 內容: 
 
-  1. 學校請假單
+  1. 學校請假系統為主軸
  
      人員包含:校長,副校長,會計師,人事,學務處,教務處,行政人員,老師,學生
      
@@ -98,10 +98,66 @@
  
 • 畫面呈現: 
 
-   # LogIn
+   ## LogIn
+   
+   <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-login.PNG" width="650" />
+   
+   ## Main
+
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveForm1.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveForm2.PNG" width="800" />
+
+  | Option | Description |
+  | ------ | ----------- |
+  |   查詢條件    | 進行中,表示自己的假單流程尚未跑完,或是別人的請假單需要你做簽核的動作. 已完成,表示假單已同意. 已撤銷,自己把假單取消,撤銷後無法再修改,只能請新的假單. |
+  |   假單清單    | 顯示請假單編號,請假類型,請假開始時間,請假結束時間,假單情況. |
+
+  ## Add LeaveForm
+
+  員工
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-AddLeaveFormByEmployee.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-AddLeaveFormByEmployee2.PNG" width="800" />
+  <br/><br/>
+  學生
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-AddLeaveFormByStudent.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-AddLeaveFormByStudent2.PNG" width="800" />
+  
+
+  | Option | Description |
+  | ------ | ----------- |
+  |  送單按鈕  | 顯示錯誤視窗: 1.員工與學生超出請假規則的次數.2.除了上傳附件以外,其他資料不為空. 請假單送出後會依照流程節點表作簽核. |
+   
+  ## LeaveForm
+
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee1.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee2.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee3.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee4.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee5.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee6.PNG" width="800" />
+  <br/>
+  <img src="https://github.com/TinaLebron/LeaveFormSchool/blob/master/LeaveFormSchool/Images/github-LeaveFormByEmployee7.PNG" width="800" />
+
+  | Option | Description |
+  | ------ | ----------- |
+  |  撤銷按鈕   | 只能撤銷自己的請假單,被撤銷的請假單就不能再使用,請重新在寫新的請假單. |
+  |  受理按鈕  | 如果你是代理人或是主管階級必須由你來簽核,按下受理按鈕表示你同意這張單子. |
+  |  更新按鈕   | 代理人或是主管看到你的單子有填寫錯誤的地方,他們可以幫你做修改. |
+  |  送單按鈕   | 代理人或是主管不同意你的單子,所以必須修改後重新送單. |
+  |  不受理按鈕   | 如果你是代理人或是主管階級必須由你來簽核,按下不受理按鈕表示你不同意這張單子,不同意單子會回到申請人手上,然後申請人必須修改後再重新送單. |
    
    
-       
+   
        
        
        

@@ -752,6 +752,7 @@ namespace LeaveFormSchool.Controllers
                         }
                     }
                     else if (processInstanceTable.PITStatusId == 2) { process += "<li class=\"current\" ><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
+                    else if (processInstanceTable.PITStatusId == 3) { process += "<li class=\"current\" ><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
                     else if (processInstanceTable.PITStatusId == 4) { process += "<li><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":已受理</a></li> "; }
                     else if (processInstanceTable.PITStatusId == 5) { process += "<li class=\"current\"><a href=\"javascript: void(0); \">" + i + ". " + processNodeTable.NodeName + ":不受理</a></li> "; }
 
